@@ -48,50 +48,30 @@
      ],
      "name": "Green Line",
      "identifier": "  "
-    },
-    {
-     "directions": [
-      "Navy Pier",
-      "95th/Red Line"
-     ],
-     "map_id": 41120,
-     "color": [
-      0,
-      0,
-      64
-     ],
-     "name": "State",
-     "identifier": "29"
-    },
-    {
-     "directions": [
-      "33rd/Rhodes",
-      "Ashland Orange Ln"
-     ],
-     "map_id": 41120,
-     "color": [
-      64,
-      32,
-      0
-     ],
-     "name": "31st",
-     "identifier": "31"
-    },
-    {
-     "directions": [
-      "24th/Cicero",
-      "35th/Cottage Grove"
-     ],
-     "map_id": 41120,
-     "color": [
-      64,
-      32,
-      0
-     ],
-     "name": "35th",
-     "identifier": "35"
     }
    ]
+  }, {
+   "provider": "cta_clock.providers.cta_bus",
+   "key": "MY_CTA_API_KEY",
+   "endpoint": "http://ctabustracker.com/bustime/api/v2/getpredictions",
+   "stop_ids": [2398, 18238, 2330, 14953, 7635],
+   "routes": {
+    "29": {
+     "identifier": "29",
+     "name": "State",
+     "color": [0, 0, 255]
+    },
+    "31": {
+     "identifier": "31",
+     "name": "31st",
+     "color": [255, 165, 0]
+    },
+    "35": {
+     "identifier": "35",
+     "name": "35th",
+     "color": [45, 45, 45]
+    }
+   }
   }
  ],
  "lower_bar": {
