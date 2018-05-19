@@ -82,6 +82,17 @@ def lower_bar(canvas, small_font):
             _msg = messages[_cur_msg]
             _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
 
+        now = datetime.utcnow()
+
+        # handle special messages
+        if messages[_cur_msg] == 'CLOCK':
+            fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
+            _msg = datetime.now().strftime(fmt)
+            _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
+        elif messages[_cur_msg] == 'DATE':
+            _msg = datetime.now().strftime('%A, %B %-d, %Y')
+            _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
+
         # determine if we need to scroll
         if _msg_width > canvas.width:
             # we need to scroll the message
@@ -94,17 +105,6 @@ def lower_bar(canvas, small_font):
 
         # set timer for next swap
         _swap_time = datetime.utcnow() + timedelta(milliseconds=_msg_time)
-
-    now = datetime.utcnow()
-
-    # handle special messages
-    if messages[_cur_msg] == 'CLOCK':
-        fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
-        _msg = datetime.now().strftime(fmt)
-        _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
-    elif messages[_cur_msg] == 'DATE':
-        _msg = datetime.now().strftime('%A, %B %-d, %Y')
-        _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
 
     _td = now - _scroll_start_time
 
