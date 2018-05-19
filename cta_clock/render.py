@@ -38,7 +38,26 @@ def line_times(canvas, line, directions, small_font, big_font):
 
     if len(directions) >= 1:
         x = graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), "TO ")
+
         graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), directions[0].destination)
+
+        next_arrival = directions[0].next_arrival()
+        if next_arrival is None:
+            next_arrival_str = ''
+        elif next_arrival.is_delayed:
+            next_arrival_str = 'Delay'
+        elif next_arrival.is_approaching or next_arrival.minutes() <= 1:
+            next_arrival_str = 'Due'
+        elif next_arrival.is_scheduled:
+            next_arrival_str = '* ' + str(next_arrival.minutes())
+        elif next_arrival.is_fault:
+            next_arrival_str = '? ' + str(next_arrival.minutes())
+        else:
+            next_arrival_str = str(next_arrival.minutes())
+
+        time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
+        x = canvas.width - time_len
+        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
 
         x = 0
         y += big_font.baseline
@@ -46,6 +65,22 @@ def line_times(canvas, line, directions, small_font, big_font):
     if len(directions) >= 2:
         x = graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), "TO ")
         graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), directions[1].destination)
+
+        next_arrival = directions[1].next_arrival()
+        if next_arrival.is_delayed:
+            next_arrival_str = 'Delay'
+        elif next_arrival.is_approaching or next_arrival.minutes() <= 1:
+            next_arrival_str = 'Due'
+        elif next_arrival.is_scheduled:
+            next_arrival_str = '* ' + next_arrival.minutes()
+        elif next_arrival.is_fault:
+            next_arrival_str = '? ' + next_arrival.minutes()
+        else:
+            next_arrival_str = str(next_arrival.minutes())
+
+        time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
+        x = canvas.width - time_len
+        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
 
         x = 0
         y += big_font.baseline
@@ -98,7 +133,7 @@ def lower_bar(canvas, small_font):
     else:
         x = canvas.width - (scroll_progress * _scroll_pps)
 
-    print(scroll_progress, '; x = ', x)
+    #print(scroll_progress, '; x = ', x)
 
     y = canvas.height
 

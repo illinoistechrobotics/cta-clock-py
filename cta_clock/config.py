@@ -36,13 +36,13 @@ def init_config(path):
                     {
                         'name': 'Red Line',
                         'color': (255, 0, 0),
-                        'stop_id': 40190,
+                        'map_id': 40190,
                         'directions': ['Howard', '95th/Dan Ryan']
                     },
                     {
                         'name': 'Green Line',
                         'color': (0, 255, 0),
-                        'stop_id': 41120,
+                        'map_id': 41120,
                         'directions': ['Harlem/Lake', '63rd/Cottage Grove', '63rd/Ashland']
                     }
                 ]

@@ -17,7 +17,7 @@
  "providers": [
   {
    "provider": "cta_clock.providers.cta_rail",
-   "key": "MY_CTA_TRAIN_API_KEY",
+   "key": "MY_CTA_API_KEY",
    "endpoint": "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx",
    "lines": [
     {
@@ -25,7 +25,7 @@
       "Howard",
       "95th/Dan Ryan"
      ],
-     "stop_id": 40190,
+     "map_id": 40190,
      "color": [
       255,
       0,
@@ -40,7 +40,7 @@
       "Cottage Grove",
       "63rd/Ashland"
      ],
-     "stop_id": 41120,
+     "map_id": 41120,
      "color": [
       0,
       255,
@@ -54,7 +54,7 @@
       "Navy Pier",
       "95th/Red Line"
      ],
-     "stop_id": 41120,
+     "map_id": 41120,
      "color": [
       0,
       0,
@@ -68,7 +68,7 @@
       "33rd/Rhodes",
       "Ashland Orange Ln"
      ],
-     "stop_id": 41120,
+     "map_id": 41120,
      "color": [
       64,
       32,
@@ -82,7 +82,7 @@
       "24th/Cicero",
       "35th/Cottage Grove"
      ],
-     "stop_id": 41120,
+     "map_id": 41120,
      "color": [
       64,
       32,

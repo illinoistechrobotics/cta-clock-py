@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from rgbmatrix import RGBMatrix, graphics
 from cta_clock import render
 from cta_clock.config import load_config, gen_options, create_providers
+from cta_clock.model import update_providers
 
 matrix = None
 
@@ -55,8 +56,6 @@ def main():
 
             last_slide = datetime.utcnow()
 
-            print('Provider %d, line %d, set of directions %d' % (cur_provider, cur_line, cur_dir))
-
         canvas.Clear()
 
         l = providers[cur_provider].lines[cur_line]
@@ -67,6 +66,8 @@ def main():
         render.last_frame_time = datetime.utcnow()
 
         canvas = matrix.SwapOnVSync(canvas)
+
+        update_providers(providers)
 
 if __name__ == '__main__':
     main()
