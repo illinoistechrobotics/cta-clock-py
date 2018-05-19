@@ -59,7 +59,7 @@ def main():
         canvas.Clear()
 
         l = providers[cur_provider].lines[cur_line]
-        d = l.directions[cur_dir * 2:]
+        d = l.directions[cur_dir * 2:(cur_dir + 1) * 2]
 
         render.line_times(canvas, l, d, small_font, large_font)
         render.lower_bar(canvas, small_font)

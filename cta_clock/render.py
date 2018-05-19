@@ -18,72 +18,54 @@ def line_times(canvas, line, directions, small_font, big_font):
     x = 0
     y = big_font.baseline
 
-    id_fg_color = 255 if \
-        line.color.red < 127 or   \
-        line.color.green < 127 or \
-        line.color.blue < 127     \
-        else 0
+    # many thanks https://stackoverflow.com/questions/1855884/
+    perceptive_luminance = 1 - (0.299 * line.color.red + 0.587 * line.color.blue + 0.114 * line.color.blue) / 255
+    id_fg_color = 0 if perceptive_luminance < 0.5 else 255
 
     identifier_width = sum([big_font.CharacterWidth(ord(c)) for c in line.identifier])
-    for x_ in range(0, identifier_width):
+    for x_ in range(0, identifier_width + 1):
         for y_ in range(0, y + 1):
             canvas.SetPixel(x_, y_, line.color.red, line.color.green, line.color.blue)
 
-    x = graphics.DrawText(canvas, big_font, x, y, graphics.Color(id_fg_color, id_fg_color, id_fg_color), line.identifier)
+    x = graphics.DrawText(canvas, big_font, x + 1, y, graphics.Color(id_fg_color, id_fg_color, id_fg_color), line.identifier)
 
     graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), ' ' + line.name)
 
     x = 0
     y += big_font.baseline
 
-    if len(directions) >= 1:
-        x = graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), "TO ")
+    if len(directions) == 0:
+        msg = 'NO SCHEDULED SERVICES'
+        msg_len = sum([big_font.CharacterWidth(ord(c)) for c in msg])
+        x = (canvas.width - msg_len) / 2
+        y = (canvas.height + big_font.baseline) / 2
+        graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), msg)
+    else:
+        for dir in directions:
+            x = graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), "TO ")
 
-        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), directions[0].destination)
+            graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), dir.destination)
 
-        next_arrival = directions[0].next_arrival()
-        if next_arrival is None:
-            next_arrival_str = ''
-        elif next_arrival.is_delayed:
-            next_arrival_str = 'Delay'
-        elif next_arrival.is_approaching or next_arrival.minutes() <= 1:
-            next_arrival_str = 'Due'
-        elif next_arrival.is_scheduled:
-            next_arrival_str = '* ' + str(next_arrival.minutes())
-        elif next_arrival.is_fault:
-            next_arrival_str = '? ' + str(next_arrival.minutes())
-        else:
-            next_arrival_str = str(next_arrival.minutes())
+            next_arrival = dir.next_arrival()
+            if next_arrival is None:
+                next_arrival_str = ''
+            elif next_arrival.is_delayed:
+                next_arrival_str = 'Delay'
+            elif next_arrival.is_approaching or next_arrival.minutes() <= 1:
+                next_arrival_str = 'Due'
+            elif next_arrival.is_scheduled:
+                next_arrival_str = '* ' + str(next_arrival.minutes())
+            elif next_arrival.is_fault:
+                next_arrival_str = '? ' + str(next_arrival.minutes())
+            else:
+                next_arrival_str = str(next_arrival.minutes())
 
-        time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
-        x = canvas.width - time_len
-        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
+            time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
+            x = canvas.width - time_len
+            graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
 
-        x = 0
-        y += big_font.baseline
-
-    if len(directions) >= 2:
-        x = graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), "TO ")
-        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), directions[1].destination)
-
-        next_arrival = directions[1].next_arrival()
-        if next_arrival.is_delayed:
-            next_arrival_str = 'Delay'
-        elif next_arrival.is_approaching or next_arrival.minutes() <= 1:
-            next_arrival_str = 'Due'
-        elif next_arrival.is_scheduled:
-            next_arrival_str = '* ' + next_arrival.minutes()
-        elif next_arrival.is_fault:
-            next_arrival_str = '? ' + next_arrival.minutes()
-        else:
-            next_arrival_str = str(next_arrival.minutes())
-
-        time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
-        x = canvas.width - time_len
-        graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
-
-        x = 0
-        y += big_font.baseline
+            x = 0
+            y += big_font.baseline
 
 
 def lower_bar(canvas, small_font):
@@ -117,7 +99,7 @@ def lower_bar(canvas, small_font):
 
     # handle special messages
     if messages[_cur_msg] == 'CLOCK':
-        fmt = "%-I:%M %P" if now.second % 2 else "%-I %M %P"
+        fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
         _msg = datetime.now().strftime(fmt)
         _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
     elif messages[_cur_msg] == 'DATE':

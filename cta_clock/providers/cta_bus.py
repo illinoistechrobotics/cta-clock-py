@@ -33,7 +33,14 @@ class CTABusProvider(Provider):
     def _update_bg_cb(self, session, resp):
         try:
             print('[cta_bus]\tResponse from CTA Bus request')
-            data = resp.json()['bustime-response']['prd']
+            data = resp.json()['bustime-response']
+            if 'prd' not in data:
+                print('[cta_bus]\tNo scheduled services')
+                for line in self.lines:
+                    line.directions.clear()
+                return
+
+            data = data['prd']
 
             routes = {}
             for prd in data:

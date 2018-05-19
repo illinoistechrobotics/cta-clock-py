@@ -34,7 +34,11 @@ class CTARailProvider(Provider):
 
             # make sure we have data
             if data['errCd'] != '0':
-                print('[cta_rail] Request error:', data['errNm'], ' (%s)' % (data['errCd'],))
+                print('[cta_rail]\tRequest error:', data['errNm'], ' (%s)' % (data['errCd'],))
+                return
+
+            if 'eta' not in data:
+                print('[cta_rail]\tNo scheduled services')
                 return
 
             # find our line
