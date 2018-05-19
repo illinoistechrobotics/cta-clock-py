@@ -57,7 +57,7 @@ class CTARailProvider(Provider):
             directions = {}
 
             for eta in data['eta']:
-                direction = directions.setdefault(int(eta['destSt']), CTADirection(
+                direction = directions.setdefault(eta['destNm'], CTADirection(
                     destination=eta['destNm'],
                     direction_code=int(eta['destSt'])
                 ))
