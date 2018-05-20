@@ -70,6 +70,7 @@ def line_times(canvas, line, directions, small_font, big_font):
 
 def lower_bar(canvas, small_font):
     global _cur_msg, _swap_time, _is_static, _msg_width, _msg_time, messages, _msg, last_frame_time, _scroll_start_time
+    now = datetime.utcnow()
     if datetime.utcnow() > _swap_time:
         # swap messages
         if _cur_msg is None or _cur_msg == len(messages) - 1:
@@ -81,8 +82,6 @@ def lower_bar(canvas, small_font):
         if messages[_cur_msg] != 'CLOCK' or messages[_cur_msg] != 'DATE':
             _msg = messages[_cur_msg]
             _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
-
-        now = datetime.utcnow()
 
         # handle special messages
         if messages[_cur_msg] == 'CLOCK':
@@ -98,13 +97,13 @@ def lower_bar(canvas, small_font):
             # we need to scroll the message
             _is_static = False
             _msg_time = ((_msg_width + canvas.width) / _scroll_pps) * 1000
-            _scroll_start_time = datetime.utcnow()
+            _scroll_start_time = now
         else:
             _is_static = True
             _msg_time = 5000
 
         # set timer for next swap
-        _swap_time = datetime.utcnow() + timedelta(milliseconds=_msg_time)
+        _swap_time = now + timedelta(milliseconds=_msg_time)
 
     _td = now - _scroll_start_time
 
