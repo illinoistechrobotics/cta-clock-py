@@ -3,9 +3,11 @@
 
 from datetime import datetime, timedelta
 from rgbmatrix import RGBMatrix, graphics
-from cta_clock import render
+from cta_clock import render, util
 from cta_clock.config import load_config, gen_options, create_providers
 from cta_clock.model import update_providers
+from sys import stdin
+from select import select
 
 matrix = None
 
@@ -13,7 +15,6 @@ def main():
     global matrix
     cfg = load_config()
     options = gen_options(cfg)
-    providers = create_providers(cfg)
     render.messages = cfg['lower_bar']['messages']
 
     # Prepare matrix & fonts
@@ -33,7 +34,36 @@ def main():
     cur_provider = cur_line = cur_dir = 0
     render.last_frame_time = datetime.utcnow()
 
+    # Wait for network
+    print('[main]\tWaiting for network...')
+    while not util.is_connected():
+        pass
+    print('[main]\tConnected.')
+
+    print('[main]\tRegistering providers...')
+    providers = create_providers(cfg)
+
+    print('[main]\tReady.')
     while True:
+        # Process input
+        # If stdin has data:
+        if select([stdin], [], [], 0) == ([stdin], [], []):
+            char = stdin.read(1)
+
+            if char == 'i':
+                ip_start_time = datetime.now()
+                ip_len = timedelta(seconds=5)
+                ips = util.get_ips()
+
+                while ip_start_time + ip_len > datetime.now():
+                    canvas.Clear()
+                    y = large_font.baseline
+                    for ip in ips:
+                        graphics.DrawText(canvas, large_font, 0, y, graphics.Color(255, 255, 255), ip)
+                        y += large_font.baseline
+                    canvas = matrix.SwapOnVSync(canvas)
+                continue
+
         if datetime.utcnow() - last_slide > timedelta(milliseconds=cfg['slideshow']['slide_time']):
             # choose the next slide to display
             # if there are more directions, display those
