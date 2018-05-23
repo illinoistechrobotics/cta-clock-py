@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 messages = []
 _cur_msg = 0
 _swap_time = _scroll_start_time = datetime.utcnow()
-_scroll_pps = 30
+_scroll_pps = 60
 
 
 def line_times(canvas, line, directions, small_font, big_font):
@@ -116,6 +116,10 @@ def lower_bar(canvas, small_font):
 
     #print(scroll_progress, '; x = ', x)
 
-    y = canvas.height
+    y = canvas.height - 1
+
+    if messages[_cur_msg] == 'CLOCK':
+        fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
+        _msg = datetime.now().strftime(fmt)
 
     graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), _msg)
