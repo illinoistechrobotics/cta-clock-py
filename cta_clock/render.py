@@ -62,6 +62,9 @@ def line_times(canvas, line, directions, small_font, big_font):
 
             time_len = sum([big_font.CharacterWidth(ord(c)) for c in next_arrival_str])
             x = canvas.width - time_len
+            for x_ in range(x - 1, canvas.width):
+                for y_ in range(y - big_font.baseline, y + 1):
+                    canvas.SetPixel(x_, y_, 0, 0, 0)
             graphics.DrawText(canvas, big_font, x, y, graphics.Color(255, 255, 255), next_arrival_str)
 
             x = 0
