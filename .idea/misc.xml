@@ -3,5 +3,5 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote  unknown interpreter (sftp://pi@192.168.2.215:22/opt/python_root.sh)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote  unknown interpreter (sftp://pi@itr-cta-clock:22/opt/python_root.sh)" project-jdk-type="Python SDK" />
 </project>

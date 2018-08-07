@@ -72,14 +72,23 @@
      "color": [45, 45, 45]
     }
    }
+  }, {
+   "provider": "cta_clock.providers.cta_alerts",
+   "endpoint": "http://www.transitchicago.com/api/1.0/alerts.aspx",
+   "routes": [
+    "Red",
+    "G",
+    "29",
+    "31",
+    "35"
+   ]
+  }, {
+   "provider": "cta_clock.providers.static_messages",
+   "messages": [
+    "Hello, world!"
+   ]
+  }, {
+   "provider": "cta_clock.providers.clock"
   }
  ],
- "lower_bar": {
-  "messages": [
-   "Welcome to ITR!",
-   "The power supply for this never did come, unfortunately...",
-   "CLOCK",
-   "DATE"
-  ]
- }
 }

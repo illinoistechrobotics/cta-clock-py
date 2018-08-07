@@ -1,10 +1,11 @@
-from cta_clock.model import Line
+from cta_clock.model import Line, MessageProvider
 from rgbmatrix import FrameCanvas, graphics
 from datetime import datetime, timedelta
 
 
 # It's #### #### #state
 messages = []
+_cur_provider = 0
 _cur_msg = 0
 _swap_time = _scroll_start_time = datetime.utcnow()
 _scroll_pps = 60
@@ -71,29 +72,28 @@ def line_times(canvas, line, directions, small_font, big_font):
             y += big_font.baseline
 
 
-def lower_bar(canvas, small_font):
-    global _cur_msg, _swap_time, _is_static, _msg_width, _msg_time, messages, _msg, last_frame_time, _scroll_start_time
+def lower_bar(canvas, small_font, providers):
+    global _cur_provider, _cur_msg, _swap_time, _is_static, _msg_width, _msg_time, messages, _msg, last_frame_time, _scroll_start_time
     now = datetime.utcnow()
     if datetime.utcnow() > _swap_time:
+        print('[lower_bar]\tSwitching messages')
         # swap messages
-        if _cur_msg is None or _cur_msg == len(messages) - 1:
+        # check to see if we have a message provider (on first run this will more than likely be false)
+
+        # we have a message provider, so load the next message
+        _cur_msg += 1
+        if not isinstance(providers[_cur_provider], MessageProvider) or _cur_msg >= len(providers[_cur_provider].messages):
+            print('[lower_bar]\tSwitching providers (cur_msg = %d; there are %d messages)' % (_cur_msg, len(providers[_cur_provider].messages) if isinstance(providers[_cur_provider], MessageProvider) else 0))
+            # switch providers
             _cur_msg = 0
-        else:
-            _cur_msg += 1
+            _cur_provider += 1
+            while _cur_provider >= len(providers) or not isinstance(providers[_cur_provider], MessageProvider) or len(providers[_cur_provider].messages) == 0:
+                _cur_provider += 1
+                if _cur_provider >= len(providers):
+                    _cur_provider = 0
 
-        # assume a default width for special messages
-        if messages[_cur_msg] != 'CLOCK' or messages[_cur_msg] != 'DATE':
-            _msg = messages[_cur_msg]
-            _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
-
-        # handle special messages
-        if messages[_cur_msg] == 'CLOCK':
-            fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
-            _msg = datetime.now().strftime(fmt)
-            _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
-        elif messages[_cur_msg] == 'DATE':
-            _msg = datetime.now().strftime('%A, %B %-d, %Y')
-            _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
+        _msg = providers[_cur_provider].messages[_cur_msg].get_message()
+        _msg_width = sum([small_font.CharacterWidth(ord(c)) for c in _msg])
 
         # determine if we need to scroll
         if _msg_width > canvas.width:
@@ -108,6 +108,8 @@ def lower_bar(canvas, small_font):
         # set timer for next swap
         _swap_time = now + timedelta(milliseconds=_msg_time)
 
+        print('[lower_bar]\tSwitched to provider %d, message %d: %s' % (_cur_provider, _cur_msg, _msg))
+
     _td = now - _scroll_start_time
 
     scroll_progress = _td.total_seconds()
@@ -121,8 +123,22 @@ def lower_bar(canvas, small_font):
 
     y = canvas.height - 1
 
-    if messages[_cur_msg] == 'CLOCK':
-        fmt = "%-I:%M %p" if now.second % 2 else "%-I %M %p"
-        _msg = datetime.now().strftime(fmt)
+    _msg = providers[_cur_provider].messages[_cur_msg].get_message()
 
     graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), _msg)
+
+
+_loading_last_frame_time = datetime.utcnow()
+_loading_last_frame = 0
+_loading_fps = 10
+def status_bar(canvas, providers):
+    requests_pending = False
+    for provider in providers:
+        if provider.pending_requests > 0:
+            requests_pending = True
+            break
+
+    if requests_pending:
+        if _loading_last_frame_time:
+            pass
+

@@ -1,10 +1,10 @@
 from requests_futures.sessions import FuturesSession
 from datetime import datetime, timedelta
 from rgbmatrix.graphics import Color
-from cta_clock.model import Provider, Line, Direction, Time
+from cta_clock.model import RouteProvider, Line, Direction, Time
 
 
-class CTARailProvider(Provider):
+class CTARailProvider(RouteProvider):
     """A provider for the Chicago Transit Authority's rail service. See config.json.default for an example config."""
 
     def __init__(self, key='', endpoint='http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx'):
@@ -16,6 +16,7 @@ class CTARailProvider(Provider):
         super().__init__()
         self.key = key
         self.endpoint = endpoint
+        self.last_update = datetime.utcnow()
         self.update_interval = timedelta(minutes=2)
 
     def update(self):
@@ -27,6 +28,8 @@ class CTARailProvider(Provider):
             session = FuturesSession()
             print('[cta_rail]\tRequesting updated data for', line.name)
             session.get('%s?key=%s&mapid=%d&outputType=JSON' % (self.endpoint, self.key, line.map_id), background_callback=self._update_bg_cb)
+
+        self.last_update = datetime.utcnow()
 
     def _update_bg_cb(self, session, resp):
         try:

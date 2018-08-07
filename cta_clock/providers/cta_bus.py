@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from cta_clock.model import Provider, Line, Time, Direction
+from cta_clock.model import RouteProvider, Line, Time, Direction
 from requests_futures.sessions import FuturesSession
 from rgbmatrix.graphics import Color
 
-class CTABusProvider(Provider):
+class CTABusProvider(RouteProvider):
     """A provider for the Chicago Transit Authority's rail service. See config.json.default for an example config."""
 
     def __init__(self, key='', endpoint='http://ctabustracker.com/bustime/api/v2/getpredictions', stop_ids=list()):
@@ -16,6 +16,7 @@ class CTABusProvider(Provider):
         self.key = key
         self.endpoint = endpoint
         self.stop_ids = stop_ids
+        self.last_update = datetime.utcnow()
         self.update_interval = timedelta(minutes=2)
 
     def update(self):
@@ -29,6 +30,7 @@ class CTABusProvider(Provider):
             stop_ids = ','.join(self.stop_ids[req * 10:max([(req + 1) * 10, len(self.stop_ids) - 1])])
             session.get("%s?key=%s&stpid=%s&format=json" % (self.endpoint, self.key, stop_ids),
                         background_callback=self._update_bg_cb)
+        self.last_update = datetime.utcnow()
 
     def _update_bg_cb(self, session, resp):
         try:

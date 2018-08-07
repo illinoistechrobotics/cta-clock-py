@@ -4,9 +4,17 @@ from rgbmatrix.graphics import Color
 
 class Provider(object):
     def __init__(self):
-        self.lines = []
         self.last_update = datetime.utcnow()
         self.update_interval = timedelta(minutes=1)
+        self.pending_requests = 0
+
+    def update(self):
+        raise NotImplementedError()
+
+
+class RouteProvider(Provider):
+    def __init__(self):
+        self.lines = []
 
     def update(self):
         raise NotImplementedError()
@@ -65,6 +73,27 @@ class Time(object):
 
     def minutes(self):
         return (self.predicted_arrival - datetime.now()).seconds // 60
+
+
+class MessageProvider(object):
+    def __init__(self):
+        self.messages = []
+        self.last_update = datetime.utcnow()
+        self.update_interval = timedelta(minutes=1)
+        self.pending_requests = 0
+
+    def update(self):
+        raise NotImplementedError()
+
+
+class Message(object):
+    def __init__(self, id, message):
+        self.id = id
+
+        if isinstance(message, str):
+            self.get_message = lambda: message
+        else:
+            self.get_message = message
 
 
 def update_providers(providers):

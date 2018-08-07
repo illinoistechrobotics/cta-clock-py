@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from rgbmatrix import RGBMatrix, graphics
 from cta_clock import render, util
 from cta_clock.config import load_config, gen_options, create_providers
-from cta_clock.model import update_providers
+from cta_clock.model import update_providers, RouteProvider
 from sys import stdin
 from select import select
 
@@ -15,7 +15,6 @@ def main():
     global matrix
     cfg = load_config()
     options = gen_options(cfg)
-    render.messages = cfg['lower_bar']['messages']
 
     # Prepare matrix & fonts
 
@@ -44,6 +43,14 @@ def main():
     providers = create_providers(cfg)
 
     print('[main]\tReady.')
+
+    # set up route provider
+    # loop through the providers until we get a RouteProvider
+    while not isinstance(providers[cur_provider], RouteProvider):
+        cur_provider += 1
+        if cur_provider >= len(cur_provider):
+            cur_provider = 0
+
     while True:
         # Process input
         # If stdin has data:
@@ -65,7 +72,7 @@ def main():
                 continue
 
         if datetime.utcnow() - last_slide > timedelta(milliseconds=cfg['slideshow']['slide_time']):
-            # choose the next slide to display
+            print('[main]\tSwitching slides')
             # if there are more directions, display those
             if len(providers[cur_provider].lines[cur_line].directions) > 2 * (cur_dir + 1):
                 cur_dir += 1
@@ -76,15 +83,18 @@ def main():
                 if cur_line == len(providers[cur_provider].lines) - 1:
                     # advance to the next provider
                     cur_line = 0
-
-                    if cur_provider == len(providers) - 1:
-                        cur_provider = 0
-                    else:
+                    print('Swapping providers')
+                    cur_provider += 1
+                    while not isinstance(providers[cur_provider], RouteProvider):
+                        print('Skipping %d, its not a RouteProvider' % (cur_provider))
                         cur_provider += 1
+                        if cur_provider >= len(providers):
+                            cur_provider = 0
                 else:
                     cur_line += 1
 
             last_slide = datetime.utcnow()
+            print('[main]\tSwitched to provider %d, line %d, directions %d - %d' % (cur_provider, cur_line, cur_dir, cur_dir + 1))
 
         canvas.Clear()
 
@@ -92,7 +102,7 @@ def main():
         d = l.directions[cur_dir * 2:(cur_dir + 1) * 2]
 
         render.line_times(canvas, l, d, small_font, large_font)
-        render.lower_bar(canvas, small_font)
+        render.lower_bar(canvas, small_font, providers)
         render.last_frame_time = datetime.utcnow()
 
         canvas = matrix.SwapOnVSync(canvas)

@@ -46,6 +46,13 @@ def init_config(path):
                         'directions': ['Harlem/Lake', '63rd/Cottage Grove', '63rd/Ashland']
                     }
                 ]
+            }, {
+                'provider': 'cta_clock.providers.static_messages',
+                'messages': [
+                    'Hello, world!'
+                ]
+            }, {
+                'provider': 'cta_clock.providers.clock'
             }
         ]
     }
