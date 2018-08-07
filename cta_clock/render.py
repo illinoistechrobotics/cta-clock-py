@@ -131,7 +131,9 @@ def lower_bar(canvas, small_font, providers):
 _loading_last_frame_time = datetime.utcnow()
 _loading_last_frame = 0
 _loading_fps = 10
-def status_bar(canvas, providers):
+_loading_frames = ['|', '/', '-', '\\']
+def loading_icon(canvas, providers, font):
+    global _loading_last_frame_time, _loading_last_frame, _loading_fps, _loading_frames
     requests_pending = False
     for provider in providers:
         if provider.pending_requests > 0:
@@ -139,6 +141,14 @@ def status_bar(canvas, providers):
             break
 
     if requests_pending:
-        if _loading_last_frame_time:
-            pass
+        if _loading_last_frame_time + timedelta(milliseconds=1000/_loading_fps) < datetime.utcnow():
+            # advance to the next frame
+            _loading_last_frame += 1
+            if _loading_last_frame >= len(_loading_frames):
+                _loading_last_frame = 0
+            _loading_last_frame_time = datetime.utcnow()
+
+        x = canvas.width - sum([font.CharacterWidth(ord(c)) for c in _loading_frames[_loading_last_frame]])
+        y = font.baseline
+        graphics.DrawText(canvas, font, x, y, graphics.Color(255, 255, 255), _loading_frames[_loading_last_frame])
 

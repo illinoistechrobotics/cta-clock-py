@@ -18,6 +18,7 @@ class CTABusProvider(RouteProvider):
         self.stop_ids = stop_ids
         self.last_update = datetime.utcnow()
         self.update_interval = timedelta(minutes=2)
+        self.pending_requests = 0
 
     def update(self):
         """

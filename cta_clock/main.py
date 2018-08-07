@@ -103,6 +103,7 @@ def main():
 
         render.line_times(canvas, l, d, small_font, large_font)
         render.lower_bar(canvas, small_font, providers)
+        render.loading_icon(canvas, providers, large_font)
         render.last_frame_time = datetime.utcnow()
 
         canvas = matrix.SwapOnVSync(canvas)

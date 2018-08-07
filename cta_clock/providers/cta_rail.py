@@ -18,6 +18,7 @@ class CTARailProvider(RouteProvider):
         self.endpoint = endpoint
         self.last_update = datetime.utcnow()
         self.update_interval = timedelta(minutes=2)
+        self.pending_requests = 0
 
     def update(self):
         """

@@ -10,6 +10,7 @@ class CTAAlertsProvider(MessageProvider):
         self.endpoint = endpoint
         self.routes = routes
         self.update_interval = timedelta(minutes=2)
+        self.pending_requests = 0
 
     def update(self):
         route_list = ','.join(self.routes)
