@@ -9,10 +9,11 @@ from cta_clock.model import update_providers, RouteProvider
 from sys import stdin
 from select import select
 
-matrix = None
+matrix = canvas = None
+
 
 def main():
-    global matrix
+    global matrix, canvas
     cfg = load_config()
     options = gen_options(cfg)
 

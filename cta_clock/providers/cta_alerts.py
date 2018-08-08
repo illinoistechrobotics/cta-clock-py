@@ -16,7 +16,7 @@ class CTAAlertsProvider(MessageProvider):
         route_list = ','.join(self.routes)
 
         # build query
-        url = self.endpoint + ('?outputType=JSON&activeonly=true&accessibility=false&routeid=%s' % (route_list))
+        url = self.endpoint + ('?outputType=JSON&activeonly=true&accessibility=false&routeid=%s&recentdays=1' % (route_list))
         session = FuturesSession()
 
         self.pending_requests += 1

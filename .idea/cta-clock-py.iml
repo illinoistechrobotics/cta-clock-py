@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Remote  unknown interpreter (sftp://pi@192.168.2.215:22/opt/python_root.sh)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote  unknown interpreter (sftp://pi@itr-cta-clock:22/opt/python_root.sh)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
