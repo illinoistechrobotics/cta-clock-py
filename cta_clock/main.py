@@ -9,6 +9,8 @@ from cta_clock.model import update_providers, RouteProvider
 from sys import stdin, exc_info
 from select import select
 
+import subprocess
+
 matrix = canvas = None
 data_locks = 0
 
@@ -61,16 +63,35 @@ def main():
 
             if char == 'i':
                 ip_start_time = datetime.now()
-                ip_len = timedelta(seconds=5)
+                ip_len = timedelta(seconds=10)
                 ips = util.get_ips()
+
+                with open('/proc/meminfo') as f:
+                    meminfo = dict(map(str.strip, line.split(':', 1)) for line in f)
+
+                try:
+                    version = subprocess.check_output(['git', 'describe']).strip()
+                except subprocess.CalledProcessError:
+                    version = None
 
                 while ip_start_time + ip_len > datetime.now():
                     canvas.Clear()
                     y = large_font.baseline
-                    for ip in ips:
-                        graphics.DrawText(canvas, large_font, 0, y, graphics.Color(255, 255, 255), ip)
-                        y += large_font.baseline
+                    for ip in ips[:2]:
+                        if ip != '127.0.0.1':
+                            graphics.DrawText(canvas, large_font, 0, y, graphics.Color(255, 255, 255), ip)
+                            y += large_font.baseline
+
+                    x = 0
+                    y = canvas.height
+                    graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), '%s/%s free' % (meminfo['MemAvailable'], meminfo['MemTotal']))
+
+                    if version:
+                        y -= small_font.baseline
+                        graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), 'Version ' + version)
+
                     canvas = matrix.SwapOnVSync(canvas)
+
                 continue
 
         if datetime.utcnow() - last_slide > timedelta(milliseconds=cfg['slideshow']['slide_time']):
