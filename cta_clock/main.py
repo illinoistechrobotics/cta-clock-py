@@ -70,7 +70,7 @@ def main():
                     meminfo = dict(map(str.strip, line.split(':', 1)) for line in f)
 
                 try:
-                    version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+                    version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
                 except subprocess.CalledProcessError:
                     version = None
 
@@ -87,7 +87,7 @@ def main():
                     graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), '%s/%s free' % (meminfo['MemAvailable'], meminfo['MemTotal']))
 
                     if version:
-                        y -= small_font.baseline
+                        y -= (small_font.baseline + 1)
                         graphics.DrawText(canvas, small_font, x, y, graphics.Color(255, 255, 255), 'Version ' + version)
 
                     canvas = matrix.SwapOnVSync(canvas)
