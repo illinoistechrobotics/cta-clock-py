@@ -70,7 +70,7 @@ def main():
                     meminfo = dict(map(str.strip, line.split(':', 1)) for line in f)
 
                 try:
-                    version = subprocess.check_output(['git', 'describe']).strip()
+                    version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
                 except subprocess.CalledProcessError:
                     version = None
 
