@@ -6,10 +6,11 @@ from rgbmatrix import RGBMatrix, graphics
 from cta_clock import render, util
 from cta_clock.config import load_config, gen_options, create_providers
 from cta_clock.model import update_providers, RouteProvider
-from sys import stdin
+from sys import stdin, exc_info
 from select import select
 
 matrix = canvas = None
+data_locks = 0
 
 
 def main():
@@ -112,4 +113,9 @@ def main():
         update_providers(providers)
 
 if __name__ == '__main__':
-    main()
+    # fault tolerance... heh
+    while True:
+        try:
+            main()
+        except:
+            print(exc_info())

@@ -5,10 +5,12 @@ from cta_clock.model import Provider, Line, Direction
 
 
 def load_config():
-    if not os.path.isfile('config.json'):
+    filepath = '/etc/transit-clock/config.json' if os.path.isfile('/etc/transit-clock/config.json') else 'config.json'
+
+    if not os.path.isfile(filepath):
         cfg = init_config('config.json')
     else:
-        with open('config.json', 'r') as f:
+        with open(filepath, 'r') as f:
             cfg = json.load(f)
     return cfg
 
