@@ -47,7 +47,7 @@ class Direction(object):
         lowest = self.times[0]
         for i, t in enumerate(self.times):
             m = t.minutes()
-            if m < 0:
+            if m < 0 or m > 120:
                 del self.times[i]
             elif m >= 0 and m < lowest.minutes():
                 lowest = t
